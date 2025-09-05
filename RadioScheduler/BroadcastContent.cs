@@ -27,15 +27,6 @@ class Reportage : BroadcastContent
    { }
 }
 
-// class Music : BroadcastContent
-// {
-//    public Music(string title, TimeOnly startTime, TimeSpan duration)
-//          : base(title, startTime, duration)
-//    {
-
-//    }
-// }
-
 class LiveSession : BroadcastContent
 {
    public string Host { get; set; }
@@ -48,4 +39,11 @@ class LiveSession : BroadcastContent
    {
       Host = host;
    }
+}
+
+class Music : BroadcastContent
+{
+   public Music(string title, TimeOnly startTime, TimeSpan duration)
+      : base(title, startTime, duration)
+   { }
 }

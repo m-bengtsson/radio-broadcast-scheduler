@@ -26,11 +26,4 @@ public class DaySchedule
 
       SortBroadcasts();
    }
-
-
-
-   // If list is empty, play music
-
-   // RemoveBroadcast()
-
 }
