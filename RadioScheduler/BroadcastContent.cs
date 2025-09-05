@@ -32,15 +32,23 @@ class LiveSession : BroadcastContent
    public string Host { get; set; }
    public string? CoHost { get; set; }
    public string? Guest { get; set; }
-   public int StudioNumber { get; set; }
+   // public int StudioNumber { get; set; }
+   public int StudioNumber
+   {
+      get
+      {
+         return !string.IsNullOrEmpty(CoHost) ? 2 : 1;
+      }
+   }
 
-   public LiveSession(string title, TimeOnly startTime, TimeSpan duration, string host)
-      : base(title, startTime, duration)
+   public LiveSession(string title, TimeOnly startTime, TimeSpan duration, string host, string? coHost = null, string? guest = null)
+         : base(title, startTime, duration)
    {
       Host = host;
+      CoHost = coHost;
+      Guest = guest;
    }
 }
-
 class Music : BroadcastContent
 {
    public Music(string title, TimeOnly startTime, TimeSpan duration)
