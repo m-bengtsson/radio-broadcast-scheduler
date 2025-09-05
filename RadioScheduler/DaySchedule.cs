@@ -23,8 +23,11 @@ public class DaySchedule
    public void AddContent(BroadcastContent content)
    {
       Broadcasts.Add(content);
+
       SortBroadcasts();
    }
+
+
 
    // If list is empty, play music
 
