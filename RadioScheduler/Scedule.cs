@@ -1,5 +1,5 @@
 using RadioScheduler;
-class Schedule
+public class Schedule
 {
    public List<DaySchedule> WeeklySchedule { get; set; } = new List<DaySchedule>();
 
