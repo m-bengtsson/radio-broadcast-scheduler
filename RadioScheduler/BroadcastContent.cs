@@ -1,7 +1,6 @@
-using System.Net.Mime;
-
 abstract public class BroadcastContent
 {
+   public Guid Id { get; private set; }
    public string Title { get; set; }
    public TimeOnly StartTime { get; set; }
    public TimeSpan Duration { get; set; } // in minutes
@@ -15,6 +14,7 @@ abstract public class BroadcastContent
 
    public BroadcastContent(string title, TimeOnly startTime, TimeSpan duration)
    {
+      Id = Guid.NewGuid();
       Title = title;
       StartTime = startTime;
       Duration = duration;
