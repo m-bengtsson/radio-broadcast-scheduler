@@ -1,4 +1,11 @@
-abstract public class BroadcastContent
+public enum BroadcastType
+{
+   LiveSession,
+   Reportage,
+   Music
+}
+
+public abstract class BroadcastContent
 {
    public Guid Id { get; private set; }
    public string Title { get; set; }
@@ -11,6 +18,8 @@ abstract public class BroadcastContent
          return StartTime.Add(Duration);
       }
    }
+   // abstract property to be implemented by derived classes
+   public abstract BroadcastType Type { get; }
 
    public BroadcastContent(string title, TimeOnly startTime, TimeSpan duration)
    {
@@ -22,6 +31,7 @@ abstract public class BroadcastContent
 }
 class Reportage : BroadcastContent
 {
+   public override BroadcastType Type => BroadcastType.Reportage;
    public Reportage(string title, TimeOnly startTime, TimeSpan duration)
       : base(title, startTime, duration)
    { }
@@ -40,6 +50,7 @@ class LiveSession : BroadcastContent
          return !string.IsNullOrEmpty(CoHost) ? 2 : 1;
       }
    }
+   public override BroadcastType Type => BroadcastType.LiveSession;
 
    public LiveSession(string title, TimeOnly startTime, TimeSpan duration, string host, string? coHost = null, string? guest = null)
          : base(title, startTime, duration)
@@ -51,6 +62,7 @@ class LiveSession : BroadcastContent
 }
 class Music : BroadcastContent
 {
+   public override BroadcastType Type => BroadcastType.Music;
    public Music(string title, TimeOnly startTime, TimeSpan duration)
       : base(title, startTime, duration)
    { }
