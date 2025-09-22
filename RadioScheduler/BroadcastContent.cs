@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 public enum BroadcastType
 {
    LiveSession,
@@ -8,6 +10,7 @@ public enum BroadcastType
 public abstract class BroadcastContent
 {
    public Guid Id { get; private set; }
+   public DateOnly Date { get; set; }
    public string Title { get; set; }
    public TimeOnly StartTime { get; set; }
    public TimeSpan Duration { get; set; } // in minutes
@@ -19,11 +22,18 @@ public abstract class BroadcastContent
       }
    }
    // abstract property to be implemented by derived classes
+   //  public abstract BroadcastType Type { get; }
+
+   [JsonIgnore]
    public abstract BroadcastType Type { get; }
 
-   public BroadcastContent(string title, TimeOnly startTime, TimeSpan duration)
+   [JsonPropertyName("type")]
+   public string TypeName => Type.ToString();
+
+   public BroadcastContent(DateOnly date, string title, TimeOnly startTime, TimeSpan duration)
    {
       Id = Guid.NewGuid();
+      Date = date;
       Title = title;
       StartTime = startTime;
       Duration = duration;
@@ -32,8 +42,8 @@ public abstract class BroadcastContent
 class Reportage : BroadcastContent
 {
    public override BroadcastType Type => BroadcastType.Reportage;
-   public Reportage(string title, TimeOnly startTime, TimeSpan duration)
-      : base(title, startTime, duration)
+   public Reportage(DateOnly date, string title, TimeOnly startTime, TimeSpan duration)
+      : base(date, title, startTime, duration)
    { }
 }
 
@@ -52,8 +62,8 @@ class LiveSession : BroadcastContent
    }
    public override BroadcastType Type => BroadcastType.LiveSession;
 
-   public LiveSession(string title, TimeOnly startTime, TimeSpan duration, string host, string? coHost = null, string? guest = null)
-         : base(title, startTime, duration)
+   public LiveSession(DateOnly date, string title, TimeOnly startTime, TimeSpan duration, string host, string? coHost = null, string? guest = null)
+         : base(date, title, startTime, duration)
    {
       Host = host;
       CoHost = coHost;
@@ -63,7 +73,7 @@ class LiveSession : BroadcastContent
 class Music : BroadcastContent
 {
    public override BroadcastType Type => BroadcastType.Music;
-   public Music(string title, TimeOnly startTime, TimeSpan duration)
-      : base(title, startTime, duration)
+   public Music(DateOnly date, string title, TimeOnly startTime, TimeSpan duration)
+      : base(date, title, startTime, duration)
    { }
 }
