@@ -22,16 +22,21 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 
 var app = builder.Build();
 app.UseCors("AllowAll");
-
 app.MapControllers();
 
-// GET Schedule
 Schedule schedule = new Schedule();
-// schedule.CreateSchedule();
 
-// List<DaySchedule> weekSchedule = schedule.WeeklySchedule;
-
+// GET Schedule
 app.MapGet("/api/schedule", () => schedule.broadcasts);
+
+// Get today's schedule
+app.MapGet("/api/today", () =>
+{
+   DateOnly today = DateOnly.FromDateTime(DateTime.Now);
+   List<BroadcastContent> todaysBroadcasts = schedule.broadcasts.Where(b => b.Date == today).OrderBy(b => b.StartTime).ToList();
+   return todaysBroadcasts;
+});
+
 
 
 
