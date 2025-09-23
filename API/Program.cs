@@ -5,6 +5,7 @@ using RadioScheduler;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSingleton<Schedule>();
 
 builder.Services.AddCors(options =>
 {
@@ -13,6 +14,7 @@ builder.Services.AddCors(options =>
       policy.AllowAnyOrigin();
    });
 });
+builder.Services.AddControllers();
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -27,15 +29,15 @@ app.MapControllers();
 Schedule schedule = new Schedule();
 
 // GET Schedule
-app.MapGet("/api/schedule", () => schedule.broadcasts);
+// app.MapGet("/api/schedule", () => schedule.broadcasts);
 
-// Get today's schedule
-app.MapGet("/api/today", () =>
-{
-   DateOnly today = DateOnly.FromDateTime(DateTime.Now);
-   List<BroadcastContent> todaysBroadcasts = schedule.broadcasts.Where(b => b.Date == today).OrderBy(b => b.StartTime).ToList();
-   return todaysBroadcasts;
-});
+// // Get today's schedule
+// app.MapGet("/api/today", () =>
+// {
+//    DateOnly today = DateOnly.FromDateTime(DateTime.Now);
+//    List<BroadcastContent> todaysBroadcasts = schedule.broadcasts.Where(b => b.Date == today).OrderBy(b => b.StartTime).ToList();
+//    return todaysBroadcasts;
+// });
 
 
 
