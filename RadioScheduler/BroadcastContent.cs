@@ -24,9 +24,9 @@ public abstract class BroadcastContent
    // abstract property to be implemented by derived classes
 
    [JsonIgnore]
-   public abstract BroadcastType TypeName { get; }
+   protected abstract BroadcastType TypeName { get; }
 
-   // [JsonPropertyName("type")]
+   [JsonPropertyName("type")]
    public string Type => TypeName.ToString();
 
    public BroadcastContent(DateOnly date, string title, TimeOnly startTime, TimeSpan duration)
@@ -40,7 +40,7 @@ public abstract class BroadcastContent
 }
 public class Reportage : BroadcastContent
 {
-   public override BroadcastType TypeName => BroadcastType.Reportage;
+   protected override BroadcastType TypeName => BroadcastType.Reportage;
    public Reportage(DateOnly date, string title, TimeOnly startTime, TimeSpan duration)
       : base(date, title, startTime, duration)
    { }
@@ -59,7 +59,7 @@ public class LiveSession : BroadcastContent
          return !string.IsNullOrEmpty(CoHost) ? 2 : 1;
       }
    }
-   public override BroadcastType TypeName => BroadcastType.LiveSession;
+   protected override BroadcastType TypeName => BroadcastType.LiveSession;
 
    public LiveSession(DateOnly date, string title, TimeOnly startTime, TimeSpan duration, string host, string? coHost = null, string? guest = null)
          : base(date, title, startTime, duration)
@@ -71,7 +71,7 @@ public class LiveSession : BroadcastContent
 }
 public class Music : BroadcastContent
 {
-   public override BroadcastType TypeName => BroadcastType.Music;
+   protected override BroadcastType TypeName => BroadcastType.Music;
    public Music(DateOnly date, string title, TimeOnly startTime, TimeSpan duration)
       : base(date, title, startTime, duration)
    { }
