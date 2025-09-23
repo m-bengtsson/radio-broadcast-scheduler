@@ -22,13 +22,12 @@ public abstract class BroadcastContent
       }
    }
    // abstract property to be implemented by derived classes
-   //  public abstract BroadcastType Type { get; }
 
    [JsonIgnore]
-   public abstract BroadcastType Type { get; }
+   public abstract BroadcastType TypeName { get; }
 
-   [JsonPropertyName("type")]
-   public string TypeName => Type.ToString();
+   // [JsonPropertyName("type")]
+   public string Type => TypeName.ToString();
 
    public BroadcastContent(DateOnly date, string title, TimeOnly startTime, TimeSpan duration)
    {
@@ -39,15 +38,15 @@ public abstract class BroadcastContent
       Duration = duration;
    }
 }
-class Reportage : BroadcastContent
+public class Reportage : BroadcastContent
 {
-   public override BroadcastType Type => BroadcastType.Reportage;
+   public override BroadcastType TypeName => BroadcastType.Reportage;
    public Reportage(DateOnly date, string title, TimeOnly startTime, TimeSpan duration)
       : base(date, title, startTime, duration)
    { }
 }
 
-class LiveSession : BroadcastContent
+public class LiveSession : BroadcastContent
 {
    public string Host { get; set; }
    public string? CoHost { get; set; }
@@ -60,7 +59,7 @@ class LiveSession : BroadcastContent
          return !string.IsNullOrEmpty(CoHost) ? 2 : 1;
       }
    }
-   public override BroadcastType Type => BroadcastType.LiveSession;
+   public override BroadcastType TypeName => BroadcastType.LiveSession;
 
    public LiveSession(DateOnly date, string title, TimeOnly startTime, TimeSpan duration, string host, string? coHost = null, string? guest = null)
          : base(date, title, startTime, duration)
@@ -70,9 +69,9 @@ class LiveSession : BroadcastContent
       Guest = guest;
    }
 }
-class Music : BroadcastContent
+public class Music : BroadcastContent
 {
-   public override BroadcastType Type => BroadcastType.Music;
+   public override BroadcastType TypeName => BroadcastType.Music;
    public Music(DateOnly date, string title, TimeOnly startTime, TimeSpan duration)
       : base(date, title, startTime, duration)
    { }
