@@ -39,4 +39,35 @@ public class ScheduleController : ControllerBase
       }
       return Ok(broadcast);
    }
+
+   [HttpPost]
+   public IActionResult AddBroadcast([FromBody] BroadcastDto dto)
+   {
+      // TODO validate date and time to avoid conflicts
+      // TODO validate required fields
+      BroadcastContent newBroadcast;
+
+      switch (dto.Type)
+      {
+         case "LiveSession":
+            if (string.IsNullOrEmpty(dto.Host))
+            {
+               return BadRequest(new { Message = "Host is required for LiveSession." });
+            }
+            newBroadcast = new LiveSession(dto.Date, dto.Title, dto.StartTime, dto.Duration, dto.Host, dto.CoHost, dto.Guest);
+            break;
+         case "Reportage":
+            newBroadcast = new Reportage(dto.Date, dto.Title, dto.StartTime, dto.Duration);
+            break;
+         case "Music":
+            newBroadcast = new Music(dto.Date, dto.Title, dto.StartTime, dto.Duration);
+            break;
+         default:
+            return BadRequest(new { Message = "Invalid broadcast type." });
+      }
+
+      _schedule.broadcasts.Add(newBroadcast);
+      return CreatedAtAction(nameof(GetBroadcastById), new { id = newBroadcast.Id }, newBroadcast);
+
+   }
 }
