@@ -70,4 +70,16 @@ public class ScheduleController : ControllerBase
       return CreatedAtAction(nameof(GetBroadcastById), new { id = newBroadcast.Id }, newBroadcast);
 
    }
+
+   [HttpDelete("{id}")]
+   public IActionResult DeleteBroadcast(Guid id)
+   {
+      var broadcast = _schedule.broadcasts.FirstOrDefault(b => b.Id == id);
+      if (broadcast == null)
+      {
+         return NotFound(new { Message = "Event not found." });
+      }
+      _schedule.broadcasts.Remove(broadcast);
+      return NoContent();
+   }
 }
