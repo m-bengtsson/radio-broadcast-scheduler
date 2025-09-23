@@ -12,3 +12,9 @@ public class BroadcastDto
    public string? CoHost { get; set; }
    public string? Guest { get; set; }
 }
+
+public class RescheduleDto
+{
+   public DateOnly Date { get; set; }
+   public TimeOnly StartTime { get; set; }
+}

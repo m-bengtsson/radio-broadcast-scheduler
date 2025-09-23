@@ -82,4 +82,17 @@ public class ScheduleController : ControllerBase
       _schedule.broadcasts.Remove(broadcast);
       return NoContent();
    }
+   // Reschedule broadcast
+   [HttpPatch("{id}")]
+   public IActionResult RescheduleBroadcast(Guid id, [FromBody] RescheduleDto dto)
+   {
+      var broadcast = _schedule.broadcasts.FirstOrDefault(b => b.Id == id);
+      if (broadcast == null)
+      {
+         return NotFound(new { Message = "Event not found." });
+      }
+      broadcast.Date = dto.Date;
+      broadcast.StartTime = dto.StartTime;
+      return Ok(broadcast);
+   }
 }
