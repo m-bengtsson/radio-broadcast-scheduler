@@ -14,6 +14,7 @@ public class ScheduleController : ControllerBase
    [HttpGet]
    public IActionResult GetSchedule()
    {
+      // TODO Order by date and time
       return Ok(_schedule.broadcasts);
    }
 
@@ -26,5 +27,16 @@ public class ScheduleController : ControllerBase
          .OrderBy(b => b.StartTime)
          .ToList();
       return Ok(todaysBroadcasts);
+   }
+
+   [HttpGet("{id}")]
+   public IActionResult GetBroadcastById(Guid id)
+   {
+      var broadcast = _schedule.broadcasts.FirstOrDefault(b => b.Id == id);
+      if (broadcast == null)
+      {
+         return NotFound(new { Message = "Event not found." });
+      }
+      return Ok(broadcast);
    }
 }
