@@ -18,3 +18,11 @@ public class RescheduleDto
    public DateOnly Date { get; set; }
    public TimeOnly StartTime { get; set; }
 }
+public class UpdateBroadcastDto
+{
+   public string? Title { get; set; }
+   public TimeSpan? Duration { get; set; } // in minutes
+   public string? Host { get; set; }
+   public string? CoHost { get; set; }
+   public string? Guest { get; set; }
+}

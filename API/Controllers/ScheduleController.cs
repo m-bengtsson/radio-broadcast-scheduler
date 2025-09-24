@@ -10,14 +10,14 @@ public class ScheduleController : ControllerBase
    {
       _schedule = schedule;
    }
-
+   // Get full schedule
    [HttpGet]
    public IActionResult GetSchedule()
    {
       // TODO Order by date and time
       return Ok(_schedule.broadcasts);
    }
-
+   // Get today's schedule
    [HttpGet("today")]
    public IActionResult GetTodaysSchedule()
    {
@@ -28,7 +28,7 @@ public class ScheduleController : ControllerBase
          .ToList();
       return Ok(todaysBroadcasts);
    }
-
+   // Get broadcast by ID
    [HttpGet("{id}")]
    public IActionResult GetBroadcastById(Guid id)
    {
@@ -39,7 +39,7 @@ public class ScheduleController : ControllerBase
       }
       return Ok(broadcast);
    }
-
+   // Add new broadcast
    [HttpPost]
    public IActionResult AddBroadcast([FromBody] BroadcastDto dto)
    {
@@ -71,6 +71,7 @@ public class ScheduleController : ControllerBase
 
    }
 
+   // Delete broadcast
    [HttpDelete("{id}")]
    public IActionResult DeleteBroadcast(Guid id)
    {
@@ -94,5 +95,53 @@ public class ScheduleController : ControllerBase
       broadcast.Date = dto.Date;
       broadcast.StartTime = dto.StartTime;
       return Ok(broadcast);
+   }
+   // Add cohost to LiveSession
+   [HttpPatch("cohost/{id}")]
+   public IActionResult AddCoHost(Guid id, [FromBody] UpdateBroadcastDto updateDto)
+   {
+      var broadcast = _schedule.broadcasts.FirstOrDefault(b => b.Id == id);
+      if (broadcast == null)
+      {
+         return NotFound(new { Message = "Event not found." });
+      }
+      if (broadcast is LiveSession liveSession)
+      {
+         liveSession.CoHost = updateDto.CoHost;
+         return Ok(liveSession);
+      }
+      return BadRequest(new { Message = "Cohost can only be added to LiveSession." });
+   }
+   // Remove cohost from LiveSession
+   [HttpDelete("cohost/{id}")]
+   public IActionResult RemoveCoHost(Guid id)
+   {
+      var broadcast = _schedule.broadcasts.FirstOrDefault(b => b.Id == id);
+      if (broadcast == null)
+      {
+         return NotFound(new { Message = "Event not found." });
+      }
+      if (broadcast is LiveSession liveSession)
+      {
+         liveSession.CoHost = null;
+         return Ok(liveSession);
+      }
+      return BadRequest(new { Message = "Cohost can only be removed from LiveSession." });
+   }
+   // Add guest to LiveSession
+   [HttpPatch("guest/{id}")]
+   public IActionResult AddGuest(Guid id, [FromBody] UpdateBroadcastDto updateDto)
+   {
+      var broadcast = _schedule.broadcasts.FirstOrDefault(b => b.Id == id);
+      if (broadcast == null)
+      {
+         return NotFound(new { Message = "Event not found." });
+      }
+      if (broadcast is LiveSession liveSession)
+      {
+         liveSession.Guest = updateDto.Guest;
+         return Ok(liveSession);
+      }
+      return BadRequest(new { Message = "Guest can only be added to LiveSession." });
    }
 }
