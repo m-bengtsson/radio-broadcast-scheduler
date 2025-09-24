@@ -144,4 +144,20 @@ public class ScheduleController : ControllerBase
       }
       return BadRequest(new { Message = "Guest can only be added to LiveSession." });
    }
+   // Remove guest from LiveSession
+   [HttpDelete("guest/{id}")]
+   public IActionResult RemoveGuest(Guid id)
+   {
+      var broadcast = _schedule.broadcasts.FirstOrDefault(b => b.Id == id);
+      if (broadcast == null)
+      {
+         return NotFound(new { Message = "Event not found." });
+      }
+      if (broadcast is LiveSession liveSession)
+      {
+         liveSession.Guest = null;
+         return Ok(liveSession);
+      }
+      return BadRequest(new { Message = "Guest can only be removed from LiveSession." });
+   }
 }
