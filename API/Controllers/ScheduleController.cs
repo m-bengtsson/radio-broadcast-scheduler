@@ -113,9 +113,10 @@ public class ScheduleController : ControllerBase
       if (broadcast is LiveSession liveSession)
       {
          liveSession.CoHost = updateDto.CoHost;
+         _db.SaveChanges();
+
          return Ok(liveSession);
       }
-      _db.SaveChanges();
 
       return BadRequest(new { Message = "Cohost can only be added to LiveSession." });
    }
@@ -131,9 +132,11 @@ public class ScheduleController : ControllerBase
       if (broadcast is LiveSession liveSession)
       {
          liveSession.CoHost = null;
+         _db.SaveChanges();
+
          return Ok(liveSession);
       }
-      _db.SaveChanges();
+      //_db.SaveChanges();
       return BadRequest(new { Message = "Cohost can only be removed from LiveSession." });
    }
    // Add guest to LiveSession
@@ -148,9 +151,10 @@ public class ScheduleController : ControllerBase
       if (broadcast is LiveSession liveSession)
       {
          liveSession.Guest = updateDto.Guest;
+         _db.SaveChanges();
+
          return Ok(liveSession);
       }
-      _db.SaveChanges();
       return BadRequest(new { Message = "Guest can only be added to LiveSession." });
    }
    // Remove guest from LiveSession
@@ -165,9 +169,10 @@ public class ScheduleController : ControllerBase
       if (broadcast is LiveSession liveSession)
       {
          liveSession.Guest = null;
+         _db.SaveChanges();
+
          return Ok(liveSession);
       }
-      _db.SaveChanges();
       return BadRequest(new { Message = "Guest can only be removed from LiveSession." });
    }
 }
