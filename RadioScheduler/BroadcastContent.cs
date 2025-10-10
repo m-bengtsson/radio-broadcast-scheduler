@@ -6,7 +6,9 @@ public enum BroadcastType
    Reportage,
    Music
 }
-
+[JsonDerivedType(typeof(Reportage), typeDiscriminator: "Reportage")]
+[JsonDerivedType(typeof(LiveSession), typeDiscriminator: "LiveSession")]
+[JsonDerivedType(typeof(Music), typeDiscriminator: "Music")]
 public abstract class BroadcastContent
 {
    public Guid Id { get; private set; }
