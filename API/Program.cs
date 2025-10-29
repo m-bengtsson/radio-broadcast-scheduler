@@ -12,6 +12,8 @@ builder.Services.AddCors(options =>
    options.AddPolicy("AllowAll", policy =>
    {
       policy.AllowAnyOrigin();
+      policy.AllowAnyHeader();
+      policy.AllowAnyMethod();
    });
 });
 
@@ -21,7 +23,6 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 
 });
 builder.Services.AddDbContext<RadioSchedulerContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
-// builder.Services.AddDbContext<RadioSchedulerContext>(options => options.UseSqlite("DataSource=RadioScheduler.db"));
 var app = builder.Build();
 
 app.UseCors("AllowAll");

@@ -17,95 +17,133 @@ public class ScheduleController : ControllerBase
    public async Task<IActionResult> GetSchedule()
    {
       // TODO Order by date and time
-      return Ok(_db.Broadcasts.ToList());
+      try
+      {
+         var broadcasts = await _db.Broadcasts.ToListAsync();
+         return Ok(broadcasts);
+
+      }
+      catch (Exception ex)
+      {
+         return StatusCode(500, new { Message = "An error occurred while retrieving the schedule from the database.", Error = ex.Message });
+      }
    }
    // Get today's schedule
    [HttpGet("today")]
-   public IActionResult GetTodaysSchedule()
+   public async Task<IActionResult> GetTodaysSchedule()
    {
-      DateOnly today = DateOnly.FromDateTime(DateTime.Now);
-      var todaysBroadcasts = _db.Broadcasts
-         .Where(b => b.Date == today)
-         .OrderBy(b => b.StartTime)
-         .ToList();
-      return Ok(todaysBroadcasts);
+      try
+      {
+         DateOnly today = DateOnly.FromDateTime(DateTime.Now);
+         var todaysBroadcasts = await _db.Broadcasts
+            .Where(b => b.Date == today)
+            .OrderBy(b => b.StartTime)
+            .ToListAsync();
+         return Ok(todaysBroadcasts);
+
+      }
+      catch (Exception ex)
+      {
+         return StatusCode(500, new { Message = "An error occurred while retrieving today's schedule from the database.", Error = ex.Message });
+      }
    }
    // Get broadcast by ID
    [HttpGet("{id}")]
-   public IActionResult GetBroadcastById(Guid id)
+   public async Task<IActionResult> GetBroadcastById(Guid id)
    {
-      var broadcast = _db.Broadcasts.FirstOrDefault(b => b.Id == id);
-      if (broadcast == null)
+      try
       {
-         return NotFound(new { Message = "Event not found." });
+         var broadcast = await _db.Broadcasts.FirstOrDefaultAsync(b => b.Id == id);
+         if (broadcast == null)
+         {
+            return NotFound(new { Message = "Broadcast not found." });
+         }
+         return Ok(broadcast);
+
       }
-      return Ok(broadcast);
+      catch (Exception ex)
+      {
+         return StatusCode(500, new { Message = "An error occurred while retrieving the broadcast from the database.", Error = ex.Message });
+      }
    }
    // Add new broadcast
    [HttpPost]
-   public IActionResult AddBroadcast([FromBody] BroadcastDto dto)
+   public async Task<IActionResult> AddBroadcast([FromBody] BroadcastDto dto)
    {
       // TODO validate date and time to avoid conflicts
       // TODO validate required fields
       BroadcastContent newBroadcast;
-
-      switch (dto.Type)
+      try
       {
-         case "LiveSession":
-            if (string.IsNullOrEmpty(dto.Host))
-            {
-               return BadRequest(new { Message = "Host is required for LiveSession." });
-            }
-            newBroadcast = new LiveSession(dto.Date, dto.Title, dto.StartTime, dto.Duration, dto.Host, dto.CoHost, dto.Guest);
-            break;
-         case "Reportage":
-            newBroadcast = new Reportage(dto.Date, dto.Title, dto.StartTime, dto.Duration);
-            break;
-         case "Music":
-            newBroadcast = new Music(dto.Date, dto.Title, dto.StartTime, dto.Duration);
-            break;
-         default:
-            return BadRequest(new { Message = "Invalid broadcast type." });
+         if (string.IsNullOrEmpty(dto.Type) || string.IsNullOrEmpty(dto.Title) || dto.Date == default || dto.StartTime == default || dto.Duration == TimeSpan.Zero)
+         {
+            return BadRequest(new { Message = "Missing required fields." });
+         }
+
+         switch (dto.Type)
+         {
+            case "LiveSession":
+               if (string.IsNullOrEmpty(dto.Host))
+               {
+                  return BadRequest(new { Message = "Host is required for LiveSession." });
+               }
+               newBroadcast = new LiveSession(dto.Date, dto.Title, dto.StartTime, dto.Duration, dto.Host, dto.CoHost, dto.Guest);
+               break;
+            case "Reportage":
+               newBroadcast = new Reportage(dto.Date, dto.Title, dto.StartTime, dto.Duration);
+               break;
+            case "Music":
+               newBroadcast = new Music(dto.Date, dto.Title, dto.StartTime, dto.Duration);
+               break;
+            default:
+               return BadRequest(new { Message = "Invalid broadcast type." });
+         }
+         await _db.Broadcasts.AddAsync(newBroadcast);
+         await _db.SaveChangesAsync();
+
+         return CreatedAtAction(nameof(GetBroadcastById), new { id = newBroadcast.Id }, newBroadcast);
+
       }
-      _db.Broadcasts.Add(newBroadcast);
-      _db.SaveChanges();
+      catch (Exception ex)
+      {
+         return BadRequest(new { Message = "Invalid broadcast.", Error = ex.Message });
 
-      return CreatedAtAction(nameof(GetBroadcastById), new { id = newBroadcast.Id }, newBroadcast);
-
+      }
    }
 
    // Delete broadcast
    [HttpDelete("{id}")]
-   public IActionResult DeleteBroadcast(Guid id)
+   public async Task<IActionResult> DeleteBroadcast(Guid id)
    {
-      var broadcast = _db.Broadcasts.FirstOrDefault(b => b.Id == id);
+      var broadcast = await _db.Broadcasts.FirstOrDefaultAsync(b => b.Id == id);
       if (broadcast == null)
       {
          return NotFound(new { Message = "Event not found." });
       }
       _db.Broadcasts.Remove(broadcast);
-      _db.SaveChanges();
+      await _db.SaveChangesAsync();
       return NoContent();
    }
    // Reschedule broadcast
    [HttpPatch("{id}")]
-   public IActionResult RescheduleBroadcast(Guid id, [FromBody] RescheduleDto dto)
+   public async Task<IActionResult> RescheduleBroadcast(Guid id, [FromBody] RescheduleDto dto)
    {
-      var broadcast = _db.Broadcasts.FirstOrDefault(b => b.Id == id);
+      var broadcast = await _db.Broadcasts.FirstOrDefaultAsync(b => b.Id == id);
       if (broadcast == null)
       {
          return NotFound(new { Message = "Event not found." });
       }
       broadcast.Date = dto.Date;
       broadcast.StartTime = dto.StartTime;
-      _db.SaveChanges();
+
+      await _db.SaveChangesAsync();
       return Ok(broadcast);
    }
    // Add cohost to LiveSession
    [HttpPatch("cohost/{id}")]
-   public IActionResult AddCoHost(Guid id, [FromBody] UpdateBroadcastDto updateDto)
+   public async Task<IActionResult> AddCoHost(Guid id, [FromBody] UpdateBroadcastDto updateDto)
    {
-      var broadcast = _db.Broadcasts.FirstOrDefault(b => b.Id == id);
+      var broadcast = await _db.Broadcasts.FirstOrDefaultAsync(b => b.Id == id);
       if (broadcast == null)
       {
          return NotFound(new { Message = "Event not found." });
@@ -113,7 +151,7 @@ public class ScheduleController : ControllerBase
       if (broadcast is LiveSession liveSession)
       {
          liveSession.CoHost = updateDto.CoHost;
-         _db.SaveChanges();
+         await _db.SaveChangesAsync();
 
          return Ok(liveSession);
       }
@@ -122,9 +160,9 @@ public class ScheduleController : ControllerBase
    }
    // Remove cohost from LiveSession
    [HttpDelete("cohost/{id}")]
-   public IActionResult RemoveCoHost(Guid id)
+   public async Task<IActionResult> RemoveCoHost(Guid id)
    {
-      var broadcast = _db.Broadcasts.FirstOrDefault(b => b.Id == id);
+      var broadcast = await _db.Broadcasts.FirstOrDefaultAsync(b => b.Id == id);
       if (broadcast == null)
       {
          return NotFound(new { Message = "Event not found." });
@@ -132,7 +170,7 @@ public class ScheduleController : ControllerBase
       if (broadcast is LiveSession liveSession)
       {
          liveSession.CoHost = null;
-         _db.SaveChanges();
+         await _db.SaveChangesAsync();
 
          return Ok(liveSession);
       }
@@ -141,9 +179,9 @@ public class ScheduleController : ControllerBase
    }
    // Add guest to LiveSession
    [HttpPatch("guest/{id}")]
-   public IActionResult AddGuest(Guid id, [FromBody] UpdateBroadcastDto updateDto)
+   public async Task<IActionResult> AddGuest(Guid id, [FromBody] UpdateBroadcastDto updateDto)
    {
-      var broadcast = _db.Broadcasts.FirstOrDefault(b => b.Id == id);
+      var broadcast = await _db.Broadcasts.FirstOrDefaultAsync(b => b.Id == id);
       if (broadcast == null)
       {
          return NotFound(new { Message = "Event not found." });
@@ -151,7 +189,7 @@ public class ScheduleController : ControllerBase
       if (broadcast is LiveSession liveSession)
       {
          liveSession.Guest = updateDto.Guest;
-         _db.SaveChanges();
+         await _db.SaveChangesAsync();
 
          return Ok(liveSession);
       }
@@ -159,9 +197,9 @@ public class ScheduleController : ControllerBase
    }
    // Remove guest from LiveSession
    [HttpDelete("guest/{id}")]
-   public IActionResult RemoveGuest(Guid id)
+   public async Task<IActionResult> RemoveGuest(Guid id)
    {
-      var broadcast = _db.Broadcasts.FirstOrDefault(b => b.Id == id);
+      var broadcast = await _db.Broadcasts.FirstOrDefaultAsync(b => b.Id == id);
       if (broadcast == null)
       {
          return NotFound(new { Message = "Event not found." });
@@ -169,7 +207,7 @@ public class ScheduleController : ControllerBase
       if (broadcast is LiveSession liveSession)
       {
          liveSession.Guest = null;
-         _db.SaveChanges();
+         await _db.SaveChangesAsync();
 
          return Ok(liveSession);
       }
