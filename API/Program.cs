@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
@@ -24,6 +25,13 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 });
 builder.Services.AddDbContext<RadioSchedulerContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+   var context = scope.ServiceProvider.GetRequiredService<RadioSchedulerContext>();
+   DbSeeder.SeedDatabase(context);
+}
+
 
 app.UseCors("AllowAll");
 app.MapControllers();
