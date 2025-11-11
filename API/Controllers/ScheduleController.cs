@@ -19,7 +19,14 @@ public class ScheduleController : ControllerBase
       // TODO Order by date and time
       try
       {
-         var broadcasts = await _db.Broadcasts.ToListAsync();
+         var broadcasts = await _db.Broadcasts
+         .GroupBy(b => b.Date)
+         .Select(group => new
+         {
+            Date = group.Key,
+            broadcasts = group.OrderBy(b => b.StartTime).ToList()
+         })
+         .ToListAsync();
          return Ok(broadcasts);
 
       }
@@ -35,9 +42,17 @@ public class ScheduleController : ControllerBase
       try
       {
          DateOnly today = DateOnly.FromDateTime(DateTime.Now);
+
+
          var todaysBroadcasts = await _db.Broadcasts
-            .Where(b => b.Date == today)
+           .Where(b => b.Date == today)
             .OrderBy(b => b.StartTime)
+            .GroupBy(b => b.Date)   // this will create one group
+            .Select(g => new
+            {
+               Date = g.Key,
+               Broadcasts = g.ToList()
+            })
             .ToListAsync();
          return Ok(todaysBroadcasts);
 
