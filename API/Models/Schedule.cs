@@ -1,4 +1,3 @@
-using RadioScheduler;
 public class Schedule
 {
    public List<BroadcastContent> broadcasts { get; set; } = new List<BroadcastContent>();
