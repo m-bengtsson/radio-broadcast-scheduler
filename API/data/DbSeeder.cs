@@ -3,7 +3,7 @@ public static class DbSeeder
    public static void SeedDatabase(RadioSchedulerContext context)
    {
       // Make sure database exists
-      context.Database.EnsureCreated();
+      // context.Database.EnsureCreated();
 
       // Only seed if empty
       if (!context.Broadcasts.Any())
@@ -35,6 +35,21 @@ public static class DbSeeder
             new LiveSession(today.AddDays(4), "Evening Live", new TimeOnly(19, 0), TimeSpan.FromMinutes(60), "Carla"),
             new Music(today.AddDays(4), "Night Melodies", new TimeOnly(21, 0), TimeSpan.FromMinutes(45))
             };
+
+         // Day 6 
+         broadcasts.AddRange(new List<BroadcastContent>
+            {
+                new Reportage(today.AddDays(5), "Health Update", new TimeOnly(10, 0), TimeSpan.FromMinutes(30)),
+                new Music(today.AddDays(5), "Afternoon Beats", new TimeOnly(14, 0), TimeSpan.FromMinutes(45)),
+            });
+
+         // Day 7
+         broadcasts.AddRange(new List<BroadcastContent>
+            {
+                new Reportage(today.AddDays(6), "Travel News", new TimeOnly(11, 0), TimeSpan.FromMinutes(30)),
+                new LiveSession(today.AddDays(6), "Weekend Live", new TimeOnly(13, 0), TimeSpan.FromMinutes(60), "Derek"),
+                new Music(today.AddDays(6), "Sunday Classics", new TimeOnly(16, 0), TimeSpan.FromMinutes(60)),
+            });
 
          context.Broadcasts.AddRange(broadcasts);
          context.SaveChanges();

@@ -29,6 +29,11 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
    var context = scope.ServiceProvider.GetRequiredService<RadioSchedulerContext>();
+   // Drop the database file
+   context.Database.EnsureDeleted();
+
+   // Recreate tables 
+   context.Database.EnsureCreated();
    DbSeeder.SeedDatabase(context);
 }
 
