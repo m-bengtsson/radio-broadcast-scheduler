@@ -53,7 +53,6 @@ public class LiveSession : BroadcastContent
    public string Host { get; set; }
    public string? CoHost { get; set; }
    public string? Guest { get; set; }
-   // public int StudioNumber { get; set; }
    public int StudioNumber
    {
       get
