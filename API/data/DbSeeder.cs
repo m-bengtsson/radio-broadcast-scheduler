@@ -2,9 +2,6 @@ public static class DbSeeder
 {
    public static void SeedDatabase(RadioSchedulerContext context)
    {
-      // Make sure database exists
-      // context.Database.EnsureCreated();
-
       // Only seed if empty
       if (!context.Broadcasts.Any())
       {

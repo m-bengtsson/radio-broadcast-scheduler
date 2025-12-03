@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSingleton<Schedule>();
-// DotNetEnv.Env.Load();
+
 
 builder.Services.AddCors(options =>
 {
@@ -35,6 +36,57 @@ using (var scope = app.Services.CreateScope())
    // Recreate tables 
    context.Database.EnsureCreated();
    DbSeeder.SeedDatabase(context);
+
+   var contributor = new Contributor(
+      "Natalie Brooks",
+       "Some Street 1",
+       "0701234567",
+       "test@example.com"
+   );
+
+   var payment = new Payment(
+       DateTime.Now,
+       1000,
+       contributor
+   );
+
+   contributor.AddPayment(payment);
+
+   // Save to DB
+   context.Contributors.Add(contributor);
+   context.SaveChanges();
+
+   Console.WriteLine("Test contributor and payment saved!");
+
+   // ---------------------------------------------------------
+   //   👉 CONFIRM: READ BACK FROM DATABASE
+   // ---------------------------------------------------------
+   var savedContributor = context.Contributors
+       .Include(c => c.Payments)
+       .FirstOrDefault();
+
+   if (savedContributor != null)
+   {
+      Console.WriteLine("=== CONFIRMATION ===");
+      Console.WriteLine($"Contributor ID: {savedContributor.Id}");
+      Console.WriteLine($"Address: {savedContributor.Address}");
+      Console.WriteLine($"Phone: {savedContributor.PhoneNumber}");
+      Console.WriteLine($"Email: {savedContributor.Email}");
+
+      Console.WriteLine($"Payments count: {savedContributor.Payments.Count}");
+
+      foreach (var p in savedContributor.Payments)
+      {
+         Console.WriteLine($" -> Payment ID: {p.Id}");
+         Console.WriteLine($"    Amount: {p.Amount}");
+         Console.WriteLine($"    Date: {p.Date}");
+      }
+   }
+   else
+   {
+      Console.WriteLine("No contributor found in database!");
+   }
+   // ---------------------------------------------------------
 }
 
 

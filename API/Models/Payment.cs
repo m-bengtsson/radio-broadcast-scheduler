@@ -13,8 +13,7 @@ public class Payment
       Id = Guid.NewGuid();
       Date = date;
       Amount = amount;
-      // Contributor = contributor ?? throw new ArgumentNullException(nameof(contributor));
+      Contributor = contributor ?? throw new ArgumentNullException(nameof(contributor)); // Ensure valid contributor
       ContributorId = contributor.Id;
-
    }
 }
