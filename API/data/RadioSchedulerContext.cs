@@ -12,8 +12,8 @@ public class RadioSchedulerContext : DbContext
       // Configure inheritance using Table-per-Hierarchy (TPH)
       modelBuilder.Entity<BroadcastContent>()
           .HasDiscriminator<string>("BroadcastType")
-          .HasValue<Music>("Music")
           .HasValue<Reportage>("Reportage")
+          .HasValue<Music>("Music")
           .HasValue<LiveSession>("LiveSession");
 
       base.OnModelCreating(modelBuilder);

@@ -81,48 +81,31 @@ public class ScheduleController : ControllerBase
          return StatusCode(500, new { Message = "An error occurred while retrieving the broadcast from the database.", Error = ex.Message });
       }
    }
-   // Add new broadcast
    [HttpPost]
-   public async Task<IActionResult> AddBroadcast([FromBody] BroadcastDto dto)
+   public async Task<IActionResult> AddBroadcast([FromBody] AddBroadcastDto dto)
    {
-      // TODO validate date and time to avoid conflicts
-      // TODO validate required fields
-      BroadcastContent newBroadcast;
       try
       {
-         if (string.IsNullOrEmpty(dto.Type) || string.IsNullOrEmpty(dto.Title) || dto.Date == default || dto.StartTime == default || dto.Duration == TimeSpan.Zero)
-         {
-            return BadRequest(new { Message = "Missing required fields." });
-         }
+         var broadcast = BroadcastFactory.Create(dto);
 
-         switch (dto.Type)
-         {
-            case "LiveSession":
-               if (string.IsNullOrEmpty(dto.Host))
-               {
-                  return BadRequest(new { Message = "Host is required for LiveSession." });
-               }
-               newBroadcast = new LiveSession(dto.Date, dto.Title, dto.StartTime, dto.Duration, dto.Host, dto.CoHost, dto.Guest);
-               break;
-            case "Reportage":
-               newBroadcast = new Reportage(dto.Date, dto.Title, dto.StartTime, dto.Duration);
-               break;
-            case "Music":
-               newBroadcast = new Music(dto.Date, dto.Title, dto.StartTime, dto.Duration);
-               break;
-            default:
-               return BadRequest(new { Message = "Invalid broadcast type." });
-         }
-         await _db.Broadcasts.AddAsync(newBroadcast);
+         _db.Broadcasts.Add(broadcast);
          await _db.SaveChangesAsync();
 
-         return CreatedAtAction(nameof(GetBroadcastById), new { id = newBroadcast.Id }, newBroadcast);
-
+         return CreatedAtAction(nameof(GetBroadcastById),
+            new { id = broadcast.Id },
+            BroadcastMapper.ToDto(broadcast));
+      }
+      catch (ArgumentException ex)
+      {
+         return BadRequest(new { Message = ex.Message });
       }
       catch (Exception ex)
       {
-         return BadRequest(new { Message = "Invalid broadcast.", Error = ex.Message });
-
+         return StatusCode(500, new
+         {
+            Message = "An error occurred while adding the broadcast.",
+            Error = ex.Message
+         });
       }
    }
 
