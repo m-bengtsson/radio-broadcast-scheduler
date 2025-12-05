@@ -20,14 +20,35 @@ public class ScheduleController : ControllerBase
       try
       {
          var broadcasts = await _db.Broadcasts
+                  .OrderBy(b => b.Date)
+                  .ThenBy(b => b.StartTime)
+                  .ToListAsync();
+
+         var groupedBroadcasts = broadcasts
          .GroupBy(b => b.Date)
-         .Select(group => new
+         .Select(g => new
          {
-            Date = group.Key,
-            broadcasts = group.OrderBy(b => b.StartTime).ToList()
+            Date = g.Key,
+            Broadcasts = g
+            .Select(b => BroadcastMapper.ToDto(b)).ToList()
          })
-         .ToListAsync();
-         return Ok(broadcasts);
+         .ToList();
+
+         return Ok(groupedBroadcasts);
+
+         // var broadcasts = await _db.Broadcasts
+         // .GroupBy(b => b.Date)
+         // .Select(group => new
+         // {
+         //    Date = group.Key,
+         //    broadcasts = group.OrderBy(b => b.StartTime).Select(b => b
+
+
+
+         //    ).ToList()
+         // })
+         // .ToListAsync();
+         // return Ok(broadcasts);
 
       }
       catch (Exception ex)
