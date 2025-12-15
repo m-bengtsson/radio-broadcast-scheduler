@@ -30,8 +30,8 @@ public class ContributorController : ControllerBase
             Payments = c.Payments.Select(p => new PaymentDto
             {
                Id = p.Id,
-               Amount = p.Amount,
-               Date = p.Date
+               NetAmount = p.NetAmount,
+               BillingPeriod = p.BillingPeriod
             }).ToList()
          })
          .ToListAsync();

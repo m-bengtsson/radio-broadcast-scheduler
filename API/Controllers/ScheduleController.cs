@@ -35,21 +35,6 @@ public class ScheduleController : ControllerBase
          .ToList();
 
          return Ok(groupedBroadcasts);
-
-         // var broadcasts = await _db.Broadcasts
-         // .GroupBy(b => b.Date)
-         // .Select(group => new
-         // {
-         //    Date = group.Key,
-         //    broadcasts = group.OrderBy(b => b.StartTime).Select(b => b
-
-
-
-         //    ).ToList()
-         // })
-         // .ToListAsync();
-         // return Ok(broadcasts);
-
       }
       catch (Exception ex)
       {

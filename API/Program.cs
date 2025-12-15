@@ -1,6 +1,7 @@
 using System.Net.Mail;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,10 +45,14 @@ using (var scope = app.Services.CreateScope())
        "test@example.com"
    );
 
+   var billingPeriod = new DateOnly(2025, 10, 26);
+
    var payment = new Payment(
-       DateTime.Now,
-       1000,
-       contributor
+       billingPeriod,
+       contributor,
+       5,
+       2
+
    );
 
    contributor.AddPayment(payment);
@@ -78,8 +83,8 @@ using (var scope = app.Services.CreateScope())
       foreach (var p in savedContributor.Payments)
       {
          Console.WriteLine($" -> Payment ID: {p.Id}");
-         Console.WriteLine($"    Amount: {p.Amount}");
-         Console.WriteLine($"    Date: {p.Date}");
+         Console.WriteLine($"    Amount: {p.NetAmount}");
+         Console.WriteLine($"    Date: {p.BillingPeriod}");
       }
    }
    else

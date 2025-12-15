@@ -10,6 +10,8 @@ public class Contributor
    public string Email { get; set; }
 
    public List<Payment> Payments { get; set; } = [];
+   public List<BroadcastContent> Broadcasts { get; set; } = [];
+
 
    private Contributor() { }
    public Contributor(string name, string address, string phoneNumber, string email)

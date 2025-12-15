@@ -23,6 +23,7 @@ public abstract class BroadcastContent
          return StartTime.Add(Duration);
       }
    }
+   public List<Contributor> Contributors { get; set; }
    // abstract property to be implemented by derived classes
 
    [JsonIgnore]
