@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +14,7 @@ public class ScheduleController : ControllerBase
    }
    // Get full schedule
    [HttpGet]
-
+   [AllowAnonymous]
    public async Task<IActionResult> GetSchedule()
    {
       // TODO Order by date and time
@@ -43,6 +44,7 @@ public class ScheduleController : ControllerBase
    }
    // Get today's schedule
    [HttpGet("today")]
+   [AllowAnonymous]
    public async Task<IActionResult> GetTodaysSchedule()
    {
       try

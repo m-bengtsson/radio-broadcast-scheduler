@@ -1,6 +1,9 @@
 using System.Net.Mail;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualBasic;
 
 
@@ -9,10 +12,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSingleton<Schedule>();
 
-
+// Add cors policy
 builder.Services.AddCors(options =>
 {
-   options.AddPolicy("AllowAll", policy =>
+   options.AddPolicy("RefPolicy", policy =>
    {
       policy.AllowAnyOrigin();
       policy.AllowAnyHeader();
@@ -20,14 +23,28 @@ builder.Services.AddCors(options =>
    });
 });
 
-builder.Services.AddControllers().AddJsonOptions(options =>
+// Configure JSON options to handle enum as strings
+builder.Services.AddControllers()
+.AddJsonOptions(options =>
 {
    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 
 });
+
+builder.Services.AddControllers(options =>
+{
+   options.Filters.Add(new AuthorizeFilter());
+});
+// Configure DbContext with SQLite
 builder.Services.AddDbContext<RadioSchedulerContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Configure Identity services
+builder.Services.AddIdentityApiEndpoints<IdentityUser>()
+   .AddEntityFrameworkStores<RadioSchedulerContext>();
+
 var app = builder.Build();
 
+// 
 using (var scope = app.Services.CreateScope())
 {
    var context = scope.ServiceProvider.GetRequiredService<RadioSchedulerContext>();
@@ -91,11 +108,14 @@ using (var scope = app.Services.CreateScope())
    {
       Console.WriteLine("No contributor found in database!");
    }
-   // ---------------------------------------------------------
+   // -------------------------------- -------------------------
 }
 
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapIdentityApi<IdentityUser>();
 
-app.UseCors("AllowAll");
+app.UseCors("RefPolicy");
 app.MapControllers();
 
 app.Run();

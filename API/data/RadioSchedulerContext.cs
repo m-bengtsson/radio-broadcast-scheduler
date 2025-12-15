@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-public class RadioSchedulerContext : DbContext
+public class RadioSchedulerContext : IdentityDbContext<IdentityUser>
 {
    public RadioSchedulerContext(DbContextOptions<RadioSchedulerContext> options) : base(options) { }
    public DbSet<BroadcastContent> Broadcasts { get; set; }
