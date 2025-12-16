@@ -12,13 +12,14 @@ public class ContributorController : ControllerBase
       _db = db;
    }
 
+   // Get logged in contributer profile ( "my profile" )
    [HttpGet]
-
-   public async Task<IActionResult> GetContributors()
+   public async Task<IActionResult> GetMyProfile()
    {
       try
       {
-         var contributors = await _db.Contributors
+         // For demo purposes, we just get the first contributor
+         var contributor = await _db.Contributors
          .Include(c => c.Payments)
          .Select(c => new ContributorDto
          {
@@ -34,13 +35,24 @@ public class ContributorController : ControllerBase
                BillingPeriod = p.BillingPeriod
             }).ToList()
          })
-         .ToListAsync();
-         return Ok(contributors);
+         .FirstOrDefaultAsync();
 
+         if (contributor == null)
+         {
+            return NotFound(new { Message = "Contributor profile not found." });
+         }
+
+         return Ok(contributor);
       }
       catch (Exception ex)
       {
-         return StatusCode(500, new { Message = "An error occurred while retrieving the contributors from the database.", Error = ex.Message });
+         return StatusCode(500, new { Message = "An error occurred while retrieving the contributor profile from the database.", Error = ex.Message });
       }
    }
+
+   // Change contributer details
+   // [HttpPatch]
+   // public async Task<IActionResult> UpdateMyProfile([FromBody] UpdateContributorDto dto){
+
+   // }
 }

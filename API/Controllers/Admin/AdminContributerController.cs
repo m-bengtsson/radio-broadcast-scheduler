@@ -2,12 +2,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 [ApiController]
-[Route("api/admin")]
-public class AdminController : ControllerBase
+[Route("api/admin/contributor")]
+public class AdminContributorController : ControllerBase
 {
    private RadioSchedulerContext _db;
 
-   public AdminController(RadioSchedulerContext db)
+   public AdminContributorController(RadioSchedulerContext db)
    {
       _db = db;
    }
