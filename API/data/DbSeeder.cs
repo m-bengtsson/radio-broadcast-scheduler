@@ -53,33 +53,3 @@ public static class DbSeeder
       }
    }
 }
-
-// using System.Text.Json;
-
-// public static class DbSeeder
-// {
-//    public static void Seed(RadioSchedulerContext context)
-//    {
-//       if (context.Broadcasts.Any())
-//          return;
-
-//       var jsonPath = Path.Combine(AppContext.BaseDirectory, "Data", "mock-broadcasts.json");
-//       if (!File.Exists(jsonPath))
-//          throw new FileNotFoundException($"Seed file not found at {jsonPath}");
-
-//       var json = File.ReadAllText(jsonPath);
-
-//       var options = new JsonSerializerOptions
-//       {
-//          PropertyNameCaseInsensitive = true
-//       };
-
-//       var broadcasts = JsonSerializer.Deserialize<List<BroadcastContent>>(json, options);
-
-//       if (broadcasts == null || !broadcasts.Any())
-//          return;
-
-//       context.Broadcasts.AddRange(broadcasts);
-//       context.SaveChanges();
-//    }
-// }

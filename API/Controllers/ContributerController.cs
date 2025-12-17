@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +14,7 @@ public class ContributorController : ControllerBase
    }
 
    // Get logged in contributer profile ( "my profile" )
-   [HttpGet]
+   [HttpGet("me")]
    public async Task<IActionResult> GetMyProfile()
    {
       try

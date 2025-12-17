@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+[Authorize(Policy = "AdminOnly")]
 [ApiController]
 [Route("api/admin/schedule")]
 public class AdminScheduleController : ControllerBase
@@ -47,14 +49,33 @@ public class AdminScheduleController : ControllerBase
    [HttpDelete("{id}")]
    public async Task<IActionResult> DeleteBroadcast(Guid id)
    {
-      var broadcast = await _db.Broadcasts.FirstOrDefaultAsync(b => b.Id == id);
-      if (broadcast == null)
+      try
       {
-         return NotFound(new { Message = "Event not found." });
+         var broadcast = await _db.Broadcasts.FirstOrDefaultAsync(b => b.Id == id);
+         if (broadcast == null)
+         {
+            return NotFound(new { Message = "Event not found." });
+         }
+
+         _db.Broadcasts.Remove(broadcast);
+         await _db.SaveChangesAsync();
+
+         return NoContent();
       }
-      _db.Broadcasts.Remove(broadcast);
-      await _db.SaveChangesAsync();
-      return NoContent();
+      catch (ArgumentException ex)
+      {
+         return BadRequest(new { Message = ex.Message });
+      }
+      catch (Exception ex)
+      {
+         return StatusCode(500, new
+         {
+            Message = "An error occurred while deleting the broadcast.",
+            Error = ex.Message
+         });
+      }
+
+
    }
    // Reschedule broadcast
    [HttpPatch("{id}")]

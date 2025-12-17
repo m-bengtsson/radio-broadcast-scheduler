@@ -1,19 +1,23 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+[Authorize(Policy = "AdminOnly")]
 [ApiController]
 [Route("api/admin/contributor")]
 public class AdminContributorController : ControllerBase
 {
    private RadioSchedulerContext _db;
+   private UserManager<IdentityUser> _userManager;
 
-   public AdminContributorController(RadioSchedulerContext db)
+   public AdminContributorController(RadioSchedulerContext db, UserManager<IdentityUser> userManager)
    {
       _db = db;
+      _userManager = userManager;
    }
 
    [HttpGet]
-
    public async Task<IActionResult> GetContributors()
    {
       try
@@ -42,5 +46,36 @@ public class AdminContributorController : ControllerBase
       {
          return StatusCode(500, new { Message = "An error occurred while retrieving the contributors from the database.", Error = ex.Message });
       }
+   }
+
+   [HttpPost]
+   public async Task<IActionResult> CreateContributor([FromBody] CreateContributorDto dto)
+   {
+      try
+      {
+         var user = new IdentityUser
+         {
+            UserName = dto.Email,
+            Email = dto.Email
+         };
+
+         var result = await _userManager.CreateAsync(user, dto.Password);
+
+         if (!result.Succeeded)
+         {
+            return BadRequest(new { Message = "Failed to create user.", Errors = result.Errors });
+         }
+         var contributer = new Contributor(user, dto.Name, dto.Address, dto.PhoneNumber, dto.Email);
+
+         _db.Contributors.Add(contributer);
+         await _db.SaveChangesAsync();
+
+         return Ok(new { Message = "Contributor created successfully.", ContributorId = contributer.Id });
+      }
+      catch (Exception ex)
+      {
+         return StatusCode(500, new { Message = "An error occurred while creating the contributor.", Error = ex.Message });
+      }
+
    }
 }
