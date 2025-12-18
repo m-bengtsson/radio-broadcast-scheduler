@@ -1,11 +1,11 @@
 // public interface IScheduleService
 // {
-//    List<BroadcastContent> GetAllBroadcasts();
-//    List<BroadcastContent> GetTodaysBroadcasts();
-//    // List<BroadcastContent> GetBroadcastsByDate(DateOnly date);
-//    BroadcastContent? GetBroadcastById(Guid id);
-//    void AddBroadcast(BroadcastDto dto);
-//    void RemoveBroadcast(Guid id);
+//    List<EventContent> GetAllEvents();
+//    List<EventContent> GetTodaysEvents();
+//    // List<EventContent> GetEventsByDate(DateOnly date);
+//    EventContent? GetEventById(Guid id);
+//    void AddEvent(EventDto dto);
+//    void RemoveEvent(Guid id);
 //    void RescheduleBroadCast(Guid id, DateOnly newDate, TimeOnly newTime);
 // }
 
@@ -13,65 +13,65 @@
 // {
 //    private readonly Schedule _schedule;
 
-//    public void AddBroadcast(BroadcastDto dto)
+//    public void AddEvent(EventDto dto)
 //    {
-//       BroadcastContent newBroadcast = dto.Type switch
+//       EventContent newEvent = dto.Type switch
 //       {
 //          "LiveSession" => new LiveSession(dto.Date, dto.Title, dto.StartTime, dto.Duration, dto.Host ?? throw new ArgumentNullException("Host is required for LiveSession."), dto.CoHost, dto.Guest),
 //          "Reportage" => new Reportage(dto.Date, dto.Title, dto.StartTime, dto.Duration),
 //          "Music" => new Music(dto.Date, dto.Title, dto.StartTime, dto.Duration),
-//          _ => throw new ArgumentException("Invalid broadcast type.")
+//          _ => throw new ArgumentException("Invalid ev type.")
 //       };
-//       _schedule.broadcasts.Add(newBroadcast);
+//       _schedule.events.Add(newEvent);
 
 //    }
 
-//    public List<BroadcastContent> GetAllBroadcasts()
+//    public List<EventContent> GetAllEvents()
 //    {
-//       return _schedule.broadcasts;
+//       return _schedule.events;
 //    }
 
-//    public BroadcastContent? GetBroadcastById(Guid id)
+//    public EventContent? GetEventById(Guid id)
 //    {
-//       return _schedule.broadcasts.FirstOrDefault(broadcast => broadcast.Id == id);
+//       return _schedule.events.FirstOrDefault(ev => ev.Id == id);
 //    }
-//    public void RemoveBroadcast(Guid id)
+//    public void RemoveEvent(Guid id)
 //    {
-//       BroadcastContent? broadcast = GetBroadcastById(id);
+//       EventContent? ev = GetEventById(id);
 
-//       if (broadcast != null)
+//       if (ev != null)
 //       {
-//          _schedule.broadcasts.Remove(broadcast);
+//          _schedule.events.Remove(ev);
 //       }
 //       else
 //       {
-//          throw new KeyNotFoundException("Broadcast not found.");
+//          throw new KeyNotFoundException("Event not found.");
 //       }
 //    }
 
-//    public List<BroadcastContent> GetTodaysBroadcasts()
+//    public List<EventContent> GetTodaysEvents()
 //    {
 //       DateOnly today = DateOnly.FromDateTime(DateTime.Now);
-//       var todaysBroadcasts = _schedule.broadcasts
+//       var todaysEvents = _schedule.events
 //          .Where(b => b.Date == today)
 //          .OrderBy(b => b.StartTime)
 //          .ToList();
 
-//       return todaysBroadcasts;
+//       return todaysEvents;
 //    }
 
 //    public void RescheduleBroadCast(Guid id, DateOnly newDate, TimeOnly newStartTime)
 //    {
-//       var broadcast = GetBroadcastById(id);
-//       if (broadcast != null)
+//       var ev = GetEventById(id);
+//       if (ev != null)
 //       {
-//          broadcast.Date = newDate;
-//          broadcast.StartTime = newStartTime;
+//          ev.Date = newDate;
+//          ev.StartTime = newStartTime;
 //       }
 
 //    }
 // }
-// // List<BroadcastContent> IScheduleService.GetBroadcastsByDate(DateOnly date)
+// // List<EventContent> IScheduleService.GetEventsByDate(DateOnly date)
 // // {
 // //    throw new NotImplementedException();
 // // }

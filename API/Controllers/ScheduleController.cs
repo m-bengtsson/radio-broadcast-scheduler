@@ -20,22 +20,22 @@ public class ScheduleController : ControllerBase
       // TODO Order by date and time
       try
       {
-         var broadcasts = await _db.Broadcasts
+         var events = await _db.Events
                   .OrderBy(b => b.Date)
                   .ThenBy(b => b.StartTime)
                   .ToListAsync();
 
-         var groupedBroadcasts = broadcasts
+         var groupedEvents = events
          .GroupBy(b => b.Date)
          .Select(g => new
          {
             Date = g.Key,
-            Broadcasts = g
-            .Select(b => BroadcastMapper.ToDto(b)).ToList()
+            Events = g
+            .Select(b => EventMapper.ToDto(b)).ToList()
          })
          .ToList();
 
-         return Ok(groupedBroadcasts);
+         return Ok(groupedEvents);
       }
       catch (Exception ex)
       {
@@ -52,17 +52,17 @@ public class ScheduleController : ControllerBase
          DateOnly today = DateOnly.FromDateTime(DateTime.Now);
 
 
-         var todaysBroadcasts = await _db.Broadcasts
+         var todaysEvents = await _db.Events
            .Where(b => b.Date == today)
             .OrderBy(b => b.StartTime)
             .GroupBy(b => b.Date)   // this will create one group
             .Select(g => new
             {
                Date = g.Key,
-               Broadcasts = g.ToList()
+               Events = g.ToList()
             })
             .ToListAsync();
-         return Ok(todaysBroadcasts);
+         return Ok(todaysEvents);
 
       }
       catch (Exception ex)
@@ -70,24 +70,24 @@ public class ScheduleController : ControllerBase
          return StatusCode(500, new { Message = "An error occurred while retrieving today's schedule from the database.", Error = ex.Message });
       }
    }
-   // Get broadcast by ID
+   // Get ev by ID
    [AllowAnonymous]
    [HttpGet("{id}")]
-   public async Task<IActionResult> GetBroadcastById(Guid id)
+   public async Task<IActionResult> GetEventById(Guid id)
    {
       try
       {
-         var broadcast = await _db.Broadcasts.FirstOrDefaultAsync(b => b.Id == id);
-         if (broadcast == null)
+         var ev = await _db.Events.FirstOrDefaultAsync(b => b.Id == id);
+         if (ev == null)
          {
-            return NotFound(new { Message = "Broadcast not found." });
+            return NotFound(new { Message = "Event not found." });
          }
-         return Ok(broadcast);
+         return Ok(ev);
 
       }
       catch (Exception ex)
       {
-         return StatusCode(500, new { Message = "An error occurred while retrieving the broadcast from the database.", Error = ex.Message });
+         return StatusCode(500, new { Message = "An error occurred while retrieving the ev from the database.", Error = ex.Message });
       }
    }
 }

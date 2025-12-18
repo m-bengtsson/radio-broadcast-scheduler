@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore;
 public class RadioSchedulerContext : IdentityDbContext<IdentityUser>
 {
    public RadioSchedulerContext(DbContextOptions<RadioSchedulerContext> options) : base(options) { }
-   public DbSet<BroadcastContent> Broadcasts { get; set; }
+   public DbSet<EventContent> Events { get; set; }
    public DbSet<Contributor> Contributors { get; set; }
    public DbSet<Payment> Payments { get; set; }
 
    protected override void OnModelCreating(ModelBuilder modelBuilder)
    {
       // Configure inheritance using Table-per-Hierarchy (TPH)
-      modelBuilder.Entity<BroadcastContent>()
-          .HasDiscriminator<string>("BroadcastType")
+      modelBuilder.Entity<EventContent>()
+          .HasDiscriminator<string>("EventType")
           .HasValue<Reportage>("Reportage")
           .HasValue<Music>("Music")
           .HasValue<LiveSession>("LiveSession");

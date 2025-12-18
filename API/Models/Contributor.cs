@@ -13,7 +13,7 @@ public class Contributor
    public string Email { get; set; }
 
    public List<Payment> Payments { get; set; } = [];
-   public List<BroadcastContent> Broadcasts { get; set; } = [];
+   public List<EventContent> Events { get; set; } = [];
 
 
    private Contributor() { }

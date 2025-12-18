@@ -1,6 +1,6 @@
 public class Schedule
 {
-   public List<BroadcastContent> broadcasts { get; set; } = new List<BroadcastContent>();
+   public List<EventContent> events { get; set; } = new List<EventContent>();
 
    public Schedule()
    {
@@ -14,7 +14,7 @@ public class Schedule
       {
          DateOnly scheduleDate = today.AddDays(i);
          // Add default music for each day
-         broadcasts.Add(new Music(scheduleDate, "Default music", new TimeOnly(0, 0), TimeSpan.FromHours(24)));
+         events.Add(new Music(scheduleDate, "Default music", new TimeOnly(0, 0), TimeSpan.FromHours(24)));
       }
    }
 }

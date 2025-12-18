@@ -1,6 +1,6 @@
-public static class BroadcastFactory
+public static class EventFactory
 {
-   public static BroadcastContent Create(AddBroadcastDto dto)
+   public static EventContent Create(AddEventDto dto)
    {
       return dto.Type switch
       {
@@ -18,7 +18,7 @@ public static class BroadcastFactory
              dto.Guest
          ),
 
-         _ => throw new ArgumentException("Invalid broadcast type")
+         _ => throw new ArgumentException("Invalid ev type")
       };
    }
 }

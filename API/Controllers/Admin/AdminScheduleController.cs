@@ -15,20 +15,20 @@ public class AdminScheduleController : ControllerBase
    }
 
    [HttpPost]
-   public async Task<IActionResult> AddBroadcast([FromBody] AddBroadcastDto dto)
+   public async Task<IActionResult> AddEvent([FromBody] AddEventDto dto)
    {
       try
       {
-         var broadcast = BroadcastFactory.Create(dto);
+         var ev = EventFactory.Create(dto);
 
-         _db.Broadcasts.Add(broadcast);
+         _db.Events.Add(ev);
          await _db.SaveChangesAsync();
 
          return CreatedAtAction(
-            nameof(ScheduleController.GetBroadcastById),
+            nameof(ScheduleController.GetEventById),
             "Schedule",
-            new { id = broadcast.Id },
-            BroadcastMapper.ToDto(broadcast)
+            new { id = ev.Id },
+            EventMapper.ToDto(ev)
          );
       }
       catch (ArgumentException ex)
@@ -39,25 +39,25 @@ public class AdminScheduleController : ControllerBase
       {
          return StatusCode(500, new
          {
-            Message = "An error occurred while adding the broadcast.",
+            Message = "An error occurred while adding the ev.",
             Error = ex.Message
          });
       }
    }
 
-   // Delete broadcast
+   // Delete ev
    [HttpDelete("{id}")]
-   public async Task<IActionResult> DeleteBroadcast(Guid id)
+   public async Task<IActionResult> DeleteEvent(Guid id)
    {
       try
       {
-         var broadcast = await _db.Broadcasts.FirstOrDefaultAsync(b => b.Id == id);
-         if (broadcast == null)
+         var ev = await _db.Events.FirstOrDefaultAsync(b => b.Id == id);
+         if (ev == null)
          {
             return NotFound(new { Message = "Event not found." });
          }
 
-         _db.Broadcasts.Remove(broadcast);
+         _db.Events.Remove(ev);
          await _db.SaveChangesAsync();
 
          return NoContent();
@@ -70,38 +70,38 @@ public class AdminScheduleController : ControllerBase
       {
          return StatusCode(500, new
          {
-            Message = "An error occurred while deleting the broadcast.",
+            Message = "An error occurred while deleting the ev.",
             Error = ex.Message
          });
       }
 
 
    }
-   // Reschedule broadcast
+   // Reschedule ev
    [HttpPatch("{id}")]
-   public async Task<IActionResult> RescheduleBroadcast(Guid id, [FromBody] RescheduleDto dto)
+   public async Task<IActionResult> RescheduleEvent(Guid id, [FromBody] RescheduleDto dto)
    {
-      var broadcast = await _db.Broadcasts.FirstOrDefaultAsync(b => b.Id == id);
-      if (broadcast == null)
+      var ev = await _db.Events.FirstOrDefaultAsync(b => b.Id == id);
+      if (ev == null)
       {
          return NotFound(new { Message = "Event not found." });
       }
-      broadcast.Date = dto.Date;
-      broadcast.StartTime = dto.StartTime;
+      ev.Date = dto.Date;
+      ev.StartTime = dto.StartTime;
 
       await _db.SaveChangesAsync();
-      return Ok(broadcast);
+      return Ok(ev);
    }
    // Add cohost to LiveSession
    [HttpPatch("cohost/{id}")]
-   public async Task<IActionResult> AddCoHost(Guid id, [FromBody] UpdateBroadcastDto updateDto)
+   public async Task<IActionResult> AddCoHost(Guid id, [FromBody] UpdateEventDto updateDto)
    {
-      var broadcast = await _db.Broadcasts.FirstOrDefaultAsync(b => b.Id == id);
-      if (broadcast == null)
+      var ev = await _db.Events.FirstOrDefaultAsync(b => b.Id == id);
+      if (ev == null)
       {
          return NotFound(new { Message = "Event not found." });
       }
-      if (broadcast is LiveSession liveSession)
+      if (ev is LiveSession liveSession)
       {
          liveSession.CoHost = updateDto.CoHost;
          await _db.SaveChangesAsync();
@@ -115,12 +115,12 @@ public class AdminScheduleController : ControllerBase
    [HttpDelete("cohost/{id}")]
    public async Task<IActionResult> RemoveCoHost(Guid id)
    {
-      var broadcast = await _db.Broadcasts.FirstOrDefaultAsync(b => b.Id == id);
-      if (broadcast == null)
+      var ev = await _db.Events.FirstOrDefaultAsync(b => b.Id == id);
+      if (ev == null)
       {
          return NotFound(new { Message = "Event not found." });
       }
-      if (broadcast is LiveSession liveSession)
+      if (ev is LiveSession liveSession)
       {
          liveSession.CoHost = null;
          await _db.SaveChangesAsync();
@@ -132,14 +132,14 @@ public class AdminScheduleController : ControllerBase
    }
    // Add guest to LiveSession
    [HttpPatch("guest/{id}")]
-   public async Task<IActionResult> AddGuest(Guid id, [FromBody] UpdateBroadcastDto updateDto)
+   public async Task<IActionResult> AddGuest(Guid id, [FromBody] UpdateEventDto updateDto)
    {
-      var broadcast = await _db.Broadcasts.FirstOrDefaultAsync(b => b.Id == id);
-      if (broadcast == null)
+      var ev = await _db.Events.FirstOrDefaultAsync(b => b.Id == id);
+      if (ev == null)
       {
          return NotFound(new { Message = "Event not found." });
       }
-      if (broadcast is LiveSession liveSession)
+      if (ev is LiveSession liveSession)
       {
          liveSession.Guest = updateDto.Guest;
          await _db.SaveChangesAsync();
@@ -152,12 +152,12 @@ public class AdminScheduleController : ControllerBase
    [HttpDelete("guest/{id}")]
    public async Task<IActionResult> RemoveGuest(Guid id)
    {
-      var broadcast = await _db.Broadcasts.FirstOrDefaultAsync(b => b.Id == id);
-      if (broadcast == null)
+      var ev = await _db.Events.FirstOrDefaultAsync(b => b.Id == id);
+      if (ev == null)
       {
          return NotFound(new { Message = "Event not found." });
       }
-      if (broadcast is LiveSession liveSession)
+      if (ev is LiveSession liveSession)
       {
          liveSession.Guest = null;
          await _db.SaveChangesAsync();

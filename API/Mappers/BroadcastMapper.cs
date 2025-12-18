@@ -1,18 +1,18 @@
-public static class BroadcastMapper
+public static class EventMapper
 {
-   public static BroadcastDto ToDto(BroadcastContent broadcast)
+   public static EventDto ToDto(EventContent ev)
    {
-      var dto = new BroadcastDto
+      var dto = new EventDto
       {
-         Id = broadcast.Id,
-         Type = broadcast.Type,
-         Date = broadcast.Date,
-         Title = broadcast.Title,
-         StartTime = broadcast.StartTime,
-         Duration = broadcast.Duration,
+         Id = ev.Id,
+         Type = ev.Type,
+         Date = ev.Date,
+         Title = ev.Title,
+         StartTime = ev.StartTime,
+         Duration = ev.Duration,
       };
 
-      switch (broadcast)
+      switch (ev)
       {
          case LiveSession ls:
             dto.Host = ls.Host;

@@ -3,11 +3,11 @@ public static class DbSeeder
    public static void SeedDatabase(RadioSchedulerContext context)
    {
       // Only seed if empty
-      if (!context.Broadcasts.Any())
+      if (!context.Events.Any())
       {
          var today = DateOnly.FromDateTime(DateTime.Now);
 
-         var broadcasts = new List<BroadcastContent>
+         var events = new List<EventContent>
             {
                 // Day 1
             new Reportage(today, "Climate Report", new TimeOnly(10, 0), TimeSpan.FromMinutes(30)),
@@ -34,21 +34,21 @@ public static class DbSeeder
             };
 
          // Day 6 
-         broadcasts.AddRange(new List<BroadcastContent>
+         events.AddRange(new List<EventContent>
             {
                 new Reportage(today.AddDays(5), "Health Update", new TimeOnly(10, 0), TimeSpan.FromMinutes(30)),
                 new Music(today.AddDays(5), "Afternoon Beats", new TimeOnly(14, 0), TimeSpan.FromMinutes(45)),
             });
 
          // Day 7
-         broadcasts.AddRange(new List<BroadcastContent>
+         events.AddRange(new List<EventContent>
             {
                 new Reportage(today.AddDays(6), "Travel News", new TimeOnly(11, 0), TimeSpan.FromMinutes(30)),
                 new LiveSession(today.AddDays(6), "Weekend Live", new TimeOnly(13, 0), TimeSpan.FromMinutes(60), "Derek"),
                 new Music(today.AddDays(6), "Sunday Classics", new TimeOnly(16, 0), TimeSpan.FromMinutes(60)),
             });
 
-         context.Broadcasts.AddRange(broadcasts);
+         context.Events.AddRange(events);
          context.SaveChanges();
       }
    }

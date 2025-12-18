@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-public enum BroadcastType
+public enum EventType
 {
    LiveSession,
    Reportage,
@@ -9,7 +9,7 @@ public enum BroadcastType
 [JsonDerivedType(typeof(Reportage), typeDiscriminator: "Reportage")]
 [JsonDerivedType(typeof(LiveSession), typeDiscriminator: "LiveSession")]
 [JsonDerivedType(typeof(Music), typeDiscriminator: "Music")]
-public abstract class BroadcastContent
+public abstract class EventContent
 {
    public Guid Id { get; private set; }
    public DateOnly Date { get; set; }
@@ -27,12 +27,12 @@ public abstract class BroadcastContent
    // abstract property to be implemented by derived classes
 
    [JsonIgnore]
-   protected abstract BroadcastType TypeName { get; }
+   protected abstract EventType TypeName { get; }
 
    [JsonPropertyName("type")]
    public string Type => TypeName.ToString();
 
-   public BroadcastContent(DateOnly date, string title, TimeOnly startTime, TimeSpan duration)
+   public EventContent(DateOnly date, string title, TimeOnly startTime, TimeSpan duration)
    {
       Id = Guid.NewGuid();
       Date = date;
@@ -41,15 +41,15 @@ public abstract class BroadcastContent
       Duration = duration;
    }
 }
-public class Reportage : BroadcastContent
+public class Reportage : EventContent
 {
-   protected override BroadcastType TypeName => BroadcastType.Reportage;
+   protected override EventType TypeName => EventType.Reportage;
    public Reportage(DateOnly date, string title, TimeOnly startTime, TimeSpan duration)
       : base(date, title, startTime, duration)
    { }
 }
 
-public class LiveSession : BroadcastContent
+public class LiveSession : EventContent
 {
    public string Host { get; set; }
    public string? CoHost { get; set; }
@@ -61,7 +61,7 @@ public class LiveSession : BroadcastContent
          return !string.IsNullOrEmpty(CoHost) ? 2 : 1;
       }
    }
-   protected override BroadcastType TypeName => BroadcastType.LiveSession;
+   protected override EventType TypeName => EventType.LiveSession;
 
    public LiveSession(DateOnly date, string title, TimeOnly startTime, TimeSpan duration, string host, string? coHost = null, string? guest = null)
          : base(date, title, startTime, duration)
@@ -71,9 +71,9 @@ public class LiveSession : BroadcastContent
       Guest = guest;
    }
 }
-public class Music : BroadcastContent
+public class Music : EventContent
 {
-   protected override BroadcastType TypeName => BroadcastType.Music;
+   protected override EventType TypeName => EventType.Music;
    public Music(DateOnly date, string title, TimeOnly startTime, TimeSpan duration)
       : base(date, title, startTime, duration)
    { }
